@@ -63,18 +63,6 @@ const TYPE = {
   transport:  { icon: "directions_transit",  color: "#a855f7", label: "TRANSIT" },
 };
 
-type Activity = {
-  name: string;
-  type: "hotel" | "restaurant" | "activity" | "transport";
-  address: string;
-  latitude: number;
-  longitude: number;
-  start_time?: string;
-  end_time?: string;
-  estimated_cost: number;
-  notes: string;
-};
-
 function getPeriod(act) {
   if (act.type === "hotel") return { label: "CHECK-IN", color: "#2b9dee" };
   if (act.type === "transport") return { label: "TRANSIT", color: "#a855f7" };
@@ -768,30 +756,19 @@ function Plan({ onBack, onGenerate, initError }) {
         </div>
       </div>
 
-      {/* Max days notice */}
-        <div style={{
-        margin: "0 16px 12px",
-        padding: "10px 14px",
-        borderRadius: 10,
-        background: "#fff7ed",
-        border: "1px solid #fed7aa",
-        display: "flex",
-        alignItems: "center",
-        gap: 8
-      }}>
-        <span className="material-symbols-outlined"
-          style={{ fontSize: 18, color: "#f97316" }}>
-          info
-        </span>
-        <span style={{ fontSize: ".82rem", color: "#c2410c", fontWeight: 600 }}>
-          Maximum of 3 days only for now
-        </span>
-      </div>
-
       {/* CTA */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: "100%", maxWidth: 480, padding: "12px 16px 28px",
         background: "linear-gradient(to top, rgba(246,247,248,1) 65%, transparent)" }}>
+        <div style={{ marginBottom: 10, padding: "10px 14px", borderRadius: 10,
+          background: "#fff7ed", border: "1px solid #fed7aa",
+          display: "flex", alignItems: "center", gap: 8 }}>
+          <span className="material-symbols-outlined"
+            style={{ fontSize: 18, color: "#f97316", lineHeight: 1, userSelect: "none" }}>info</span>
+          <span style={{ fontSize: ".82rem", color: "#c2410c", fontWeight: 600 }}>
+            Maximum of 3 days only for now
+          </span>
+        </div>
         <button onClick={go} style={{
           width: "100%", height: 54, borderRadius: 12, background: PRIMARY, color: "#fff",
           fontSize: "1rem", fontWeight: 700, border: "none", cursor: "pointer",
