@@ -1406,14 +1406,36 @@ function Itinerary({ trip, onBack, onSave, onNavigate, alreadySaved }) {
 
 // ── ROOT ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const { trips, save, remove } = useTrips();
+  const { trips, save, remove } = useTrips(); // keep this only once
   const [screen, setScreen] = useState("welcome");
-  const [trip, setTrip] = useState(null);
+  const [trip, setTrip] = useState<any>(null);
   const [loadDest, setLoadDest] = useState("");
   const [initErr, setInitErr] = useState("");
 
+  async function saveToDb(trip: any) {
+    try {
+      save(trip); // save to localStorage immediately
+  
+      await fetch("/api/trips", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...trip,
+          userId: "demo-user",
+        }),
+      });
+  
+    } catch (e) {
+      console.error("Failed to save to DB:", e);
+    }
+  }
+
   async function generate({ destination, startDate, endDate, budget, interests, travelerInfo }) {
-    setLoadDest(destination); setScreen("loading"); setInitErr("");
+    setLoadDest(destination); 
+    setScreen("loading"); 
+    setInitErr("");
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -1430,46 +1452,46 @@ export default function App() {
     }
   }
 
-  function go(id) {
+  function go(id: string) {
     const valid = ["welcome", "plan", "mytrips", "saved", "profile"];
     if (valid.includes(id)) setScreen(id);
   }
 
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      <style>{`
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Plus Jakarta Sans',sans-serif;background:${BG};-webkit-font-smoothing:antialiased}
-        .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-family:'Material Symbols Outlined';display:inline-block;line-height:1}
-        button{font-family:'Plus Jakarta Sans',sans-serif}
-        input,textarea{font-family:'Plus Jakarta Sans',sans-serif}
-        ::-webkit-scrollbar{display:none}
-        *{scrollbar-width:none}
-      `}</style>
-      <div style={{ maxWidth: 480, margin: "0 auto", minHeight: "100vh" }}>
-        {screen === "welcome"   && <Welcome onStart={() => setScreen("plan")} />}
-        {screen === "plan"      && <Plan onBack={() => setScreen("welcome")} onGenerate={generate} initError={initErr} />}
-        {screen === "loading"   && <Loading dest={loadDest} />}
-        {screen === "itinerary" && trip && (
-          <Itinerary trip={trip} onBack={() => setScreen("mytrips")}
-            onSave={save} alreadySaved={trips.some(t => t.trip_name === trip.trip_name)}
-            onNavigate={go} />
-        )}
-        {screen === "mytrips" && (
-          <MyTrips trips={trips} onView={t => { setTrip(t); setScreen("itinerary"); }}
-            onNew={() => setScreen("plan")} onBack={() => setScreen("welcome")}
-            onNavigate={go} onRemove={remove} />
-        )}
-        {screen === "saved" && (
-          <Saved trips={trips}
-            onViewTrip={t => { setTrip(t); setScreen("itinerary"); }}
-            onNewTrip={() => setScreen("plan")}
-            onNavigate={go} />
-        )}
-        {screen === "profile" && <Profile onNavigate={go} />}
-      </div>
-    </>
+    <div style={{ maxWidth: 480, margin: "0 auto", minHeight: "100vh" }}>
+      {screen === "welcome" && <Welcome onStart={() => setScreen("plan")} />}
+      {screen === "plan" && <Plan onBack={() => setScreen("welcome")} onGenerate={generate} initError={initErr} />}
+      {screen === "loading" && <Loading dest={loadDest} />}
+      {screen === "itinerary" && trip && (
+        <Itinerary
+          trip={trip}
+          onBack={() => setScreen("mytrips")}
+          onSave={saveToDb}
+          alreadySaved={trip && trips.some(t => t.trip_name === trip.trip_name)}
+          onNavigate={go}
+        />
+      )}
+      {screen === "mytrips" && (
+        <MyTrips
+          trips={trips}
+          onView={t => { setTrip(t); setScreen("itinerary"); }}
+          onNew={() => setScreen("plan")}
+          onBack={() => setScreen("welcome")}
+          onNavigate={go}
+          onRemove={remove}
+        />
+      )}
+      {screen === "saved" && (
+        <Saved
+          trips={trips}
+          onViewTrip={t => { setTrip(t); setScreen("itinerary"); }}
+          onNewTrip={() => setScreen("plan")}
+          onNavigate={go}
+        />
+      )}
+      {screen === "profile" && <Profile onNavigate={go} />}
+      <BottomNav active={screen} go={go} />
+    </div>
   );
 }
+
