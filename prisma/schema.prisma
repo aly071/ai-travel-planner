@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 model User {
@@ -26,7 +27,7 @@ model Trip {
   destination String
   startDate   DateTime
   endDate     DateTime
-  totalBudget Float
+  totalBudget Float    @default(0)
   tripData    Json
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
