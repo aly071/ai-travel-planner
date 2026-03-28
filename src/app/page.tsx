@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { SignInButton, UserButton } from "@clerk/nextjs";
 
 const SYSTEM_PROMPT = `You are a travel planner AI.
 Return a JSON object only. No markdown, no explanation, no backticks.
@@ -515,65 +516,231 @@ function Profile({ onNavigate }) {
 function Welcome({ onStart }) {
   return (
     <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column" }}>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px", position: "sticky", top: 0, zIndex: 50, background: BG }}>
+      
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px",
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          background: BG
+        }}
+      >
         <div style={{ width: 40 }} />
-        <h2 style={{ fontSize: "1.1rem", fontWeight: 700, flex: 1, textAlign: "center", color: "#0f172a" }}>AI Travel Planner</h2>
-        <Icon name="account_circle" sz={28} col={PRIMARY} cls="cursor-pointer" />
+
+        <h2
+          style={{
+            fontSize: "1.1rem",
+            fontWeight: 700,
+            flex: 1,
+            textAlign: "center",
+            color: "#0f172a"
+          }}
+        >
+          AI Travel Planner
+        </h2>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <SignInButton mode="modal">
+            <button
+              style={{
+                background: PRIMARY,
+                color: "#fff",
+                border: "none",
+                borderRadius: 20,
+                padding: "7px 16px",
+                fontSize: ".83rem",
+                fontWeight: 700,
+                cursor: "pointer"
+              }}
+            >
+              Sign In
+            </button>
+          </SignInButton>
+
+          <UserButton afterSignOutUrl="/" />
+        </div>
       </header>
 
-      <div style={{ width: "100%", aspectRatio: "16/9", minHeight: 320, maxHeight: 440,
-        backgroundImage: "url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=80)",
-        backgroundSize: "cover", backgroundPosition: "center", position: "relative",
-        borderRadius: "0 0 28px 28px", overflow: "hidden", flexShrink: 0 }}>
-        <div style={{ position: "absolute", inset: 0,
-          background: "linear-gradient(to top, rgba(16,26,34,0.45) 0%, transparent 55%)" }} />
+      <div
+        style={{
+          width: "100%",
+          aspectRatio: "16/9",
+          minHeight: 320,
+          maxHeight: 440,
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=80)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative",
+          borderRadius: "0 0 28px 28px",
+          overflow: "hidden",
+          flexShrink: 0
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to top, rgba(16,26,34,0.45) 0%, transparent 55%)"
+          }}
+        />
       </div>
 
-      <div style={{ padding: "36px 24px 120px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "6px 16px",
-          borderRadius: 999, background: `${PRIMARY}18`, color: PRIMARY,
-          fontSize: ".82rem", fontWeight: 700, marginBottom: 20 }}>
+      <div
+        style={{
+          padding: "36px 24px 120px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+      >
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+            padding: "6px 16px",
+            borderRadius: 999,
+            background: `${PRIMARY}18`,
+            color: PRIMARY,
+            fontSize: ".82rem",
+            fontWeight: 700,
+            marginBottom: 20
+          }}
+        >
           <Icon name="auto_awesome" sz={15} col={PRIMARY} /> Next-Gen Travel
         </div>
 
-        <h1 style={{ fontSize: "2.35rem", fontWeight: 800, lineHeight: 1.18, textAlign: "center",
-          letterSpacing: "-.025em", marginBottom: 14, color: "#0f172a" }}>
+        <h1
+          style={{
+            fontSize: "2.35rem",
+            fontWeight: 800,
+            lineHeight: 1.18,
+            textAlign: "center",
+            letterSpacing: "-.025em",
+            marginBottom: 14,
+            color: "#0f172a"
+          }}
+        >
           Your Perfect Trip,{" "}
           <span style={{ color: PRIMARY }}>AI-Powered.</span>
         </h1>
 
-        <p style={{ color: "#64748b", fontSize: ".97rem", lineHeight: 1.7, textAlign: "center",
-          maxWidth: 380, marginBottom: 32 }}>
-          Experience personalized itineraries, smart bookings, and hidden gems discovered just for you by our advanced travel intelligence.
+        <p
+          style={{
+            color: "#64748b",
+            fontSize: ".97rem",
+            lineHeight: 1.7,
+            textAlign: "center",
+            maxWidth: 380,
+            marginBottom: 32
+          }}
+        >
+          Experience personalized itineraries, smart bookings, and hidden gems
+          discovered just for you by our advanced travel intelligence.
         </p>
 
-        <button onClick={onStart} style={{
-          width: "100%", maxWidth: 360, height: 56, borderRadius: 12,
-          background: PRIMARY, color: "#fff", fontSize: "1.05rem", fontWeight: 700,
-          border: "none", cursor: "pointer", display: "flex", alignItems: "center",
-          justifyContent: "center", gap: 8, boxShadow: `0 8px 28px ${PRIMARY}45`,
-          transition: "opacity .15s, transform .12s" }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = ".9"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-          onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
+        <button
+          onClick={onStart}
+          style={{
+            width: "100%",
+            maxWidth: 360,
+            height: 56,
+            borderRadius: 12,
+            background: PRIMARY,
+            color: "#fff",
+            fontSize: "1.05rem",
+            fontWeight: 700,
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            boxShadow: `0 8px 28px ${PRIMARY}45`,
+            transition: "opacity .15s, transform .12s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = ".9";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.transform = "none";
+          }}
+        >
           Start Planning <Icon name="arrow_forward" sz={20} col="#fff" />
         </button>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16,
-          marginTop: 44, width: "100%", paddingTop: 36, borderTop: "1px solid #e2e8f0" }}>
-          {[{ icon: "map", l: "Custom Maps" }, { icon: "event_note", l: "Smart Itinerary" }, { icon: "hotel", l: "Curated Stays" }]
-            .map(f => (
-              <div key={f.l} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${PRIMARY}18`,
-                  display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon name={f.icon} sz={22} col={PRIMARY} />
-                </div>
-                <span style={{ fontSize: ".75rem", fontWeight: 600, color: "#64748b", textAlign: "center" }}>{f.l}</span>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: 16,
+            marginTop: 44,
+            width: "100%",
+            paddingTop: 36,
+            borderTop: "1px solid #e2e8f0"
+          }}
+        >
+          {[
+            { icon: "map", l: "Custom Maps" },
+            { icon: "event_note", l: "Smart Itinerary" },
+            { icon: "hotel", l: "Curated Stays" }
+          ].map((f) => (
+            <div
+              key={f.l}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8
+              }}
+            >
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  background: `${PRIMARY}18`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Icon name={f.icon} sz={22} col={PRIMARY} />
               </div>
-            ))}
+              <span
+                style={{
+                  fontSize: ".75rem",
+                  fontWeight: 600,
+                  color: "#64748b",
+                  textAlign: "center"
+                }}
+              >
+                {f.l}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
-      <div style={{ height: 8, background: PRIMARY, position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100 }} />
+
+      <div
+        style={{
+          height: 8,
+          background: PRIMARY,
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100
+        }}
+      />
     </div>
   );
 }
