@@ -792,7 +792,7 @@ function Plan({ onBack, onGenerate, initError }) {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", paddingBottom: 110 }}>
+      <div style={{ flex: 1, overflowY: "auto", paddingBottom: 160 }}>
         {err && (
           <div style={{ margin: "14px 16px 0", padding: "11px 16px", borderRadius: 10,
             background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", fontSize: ".85rem" }}>
@@ -813,6 +813,7 @@ function Plan({ onBack, onGenerate, initError }) {
               onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
           </div>
         </section>
+        
 
         {/* Dates */}
         <section style={{ marginTop: 28 }}>
@@ -839,6 +840,17 @@ function Plan({ onBack, onGenerate, initError }) {
             ))}
           </div>
         </section>
+
+        {/* 3-day limit notice */}
+        <div style={{ margin: "20px 16px 0", padding: "10px 14px", borderRadius: 10,
+          background: "#fff7ed", border: "1px solid #fed7aa",
+          display: "flex", alignItems: "center", gap: 8 }}>
+          <span className="material-symbols-outlined"
+            style={{ fontSize: 18, color: "#f97316", lineHeight: 1, userSelect: "none" }}>info</span>
+          <span style={{ fontSize: ".82rem", color: "#c2410c", fontWeight: 600 }}>
+            Maximum of 3 days only for now
+          </span>
+        </div>
 
         {/* Budget */}
         <section style={{ marginTop: 28 }}>
@@ -927,15 +939,6 @@ function Plan({ onBack, onGenerate, initError }) {
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: "100%", maxWidth: 480, padding: "12px 16px 28px",
         background: "linear-gradient(to top, rgba(246,247,248,1) 65%, transparent)" }}>
-        <div style={{ marginBottom: 10, padding: "10px 14px", borderRadius: 10,
-          background: "#fff7ed", border: "1px solid #fed7aa",
-          display: "flex", alignItems: "center", gap: 8 }}>
-          <span className="material-symbols-outlined"
-            style={{ fontSize: 18, color: "#f97316", lineHeight: 1, userSelect: "none" }}>info</span>
-          <span style={{ fontSize: ".82rem", color: "#c2410c", fontWeight: 600 }}>
-            Maximum of 3 days only for now
-          </span>
-        </div>
         <button onClick={go} style={{
           width: "100%", height: 54, borderRadius: 12, background: PRIMARY, color: "#fff",
           fontSize: "1rem", fontWeight: 700, border: "none", cursor: "pointer",
