@@ -37,18 +37,55 @@ Constraints:
 - Latitude/longitude must be accurate real-world coordinates.
 - Return valid JSON ONLY.`;
 
+
+
+const DESTINATIONS = {
+  "Australia": ["Sydney", "Melbourne", "Brisbane", "Perth", "Cairns"],
+  "Philippines": ["Manila", "Cebu", "Davao", "Boracay", "Baguio"],
+  "China": ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Xiamen"],
+  "Hong Kong (China)": ["Hong Kong Island", "Kowloon", "New Territories"],
+  "Indonesia": ["Bali", "Jakarta", "Yogyakarta", "Bandung", "Lombok"],
+  "Japan": ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Sapporo"],
+  "Macau (China)": ["Macau Peninsula", "Taipa", "Cotai", "Coloane"],
+  "Malaysia": ["Kuala Lumpur", "Penang", "Langkawi", "Malacca", "Johor Bahru"],
+  "Singapore": ["Singapore City"],
+  "South Korea": ["Seoul", "Busan", "Incheon", "Jeju", "Daegu"],
+  "Taiwan": ["Taipei", "Kaohsiung", "Taichung", "Tainan", "Hualien"],
+  "Thailand": ["Bangkok", "Phuket", "Chiang Mai", "Krabi", "Pattaya"],
+  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
+  "Vietnam": ["Hanoi", "Ho Chi Minh City", "Da Nang", "Hue", "Nha Trang"],
+  "Brunei Darussalam": ["Bandar Seri Begawan"],
+  "Saudi Arabia": ["Riyadh", "Jeddah", "Mecca", "Medina"]
+};
+
 const PRIMARY = "#2b9dee";
 const BG = "#f6f7f8";
 
 const INTERESTS = [
-  { id: "food",      label: "Foodie",    icon: "restaurant" },
-  { id: "nature",    label: "Nature",    icon: "forest" },
-  { id: "history",   label: "History",   icon: "museum" },
-  { id: "nightlife", label: "Nightlife", icon: "nightlife" },
-  { id: "shopping",  label: "Shopping",  icon: "shopping_bag" },
-  { id: "adventure", label: "Adventure", icon: "hiking" },
-  { id: "art",       label: "Art",       icon: "palette" },
-  { id: "wellness",  label: "Wellness",  icon: "spa" },
+  { id: "food",        label: "Foodie",             icon: "restaurant" },
+  { id: "nature",      label: "Nature",             icon: "forest" },
+  { id: "history",     label: "History",            icon: "museum" },
+  { id: "nightlife",   label: "Nightlife",          icon: "nightlife" },
+  { id: "shopping",    label: "Shopping",           icon: "shopping_bag" },
+  { id: "adventure",   label: "Adventure",          icon: "hiking" },
+  { id: "art",         label: "Art",                 icon: "palette" },
+  { id: "wellness",    label: "Wellness",           icon: "spa" },
+  { id: "beaches",     label: "Beaches",            icon: "beach_access" },
+  { id: "mountains",   label: "Mountains & Hiking", icon: "terrain" },
+  { id: "wildlife",    label: "Wildlife & Safari",  icon: "pets" },
+  { id: "architecture",label: "Architecture",       icon: "apartment" },
+  { id: "culture",     label: "Local Culture",      icon: "festival" },
+  { id: "festivals",   label: "Festivals & Events", icon: "celebration" },
+  { id: "cruises",     label: "Cruises & Sailing",  icon: "sailing" },
+  { id: "roadtrips",   label: "Road Trips",         icon: "directions_car" },
+  { id: "photography", label: "Photography",        icon: "camera_alt" },
+  { id: "luxury",      label: "Luxury Travel",      icon: "king_bed" },
+  { id: "budget",      label: "Budget Travel",      icon: "attach_money" },
+  { id: "ecotourism",  label: "Eco-Tourism",        icon: "eco" },
+  { id: "extreme",     label: "Extreme Sports",     icon: "sports_motorsports" },
+  { id: "camping",     label: "Camping & Glamping", icon: "camping" },
+  { id: "islands",     label: "Islands & Coasts",   icon: "beach_access" },
+  { id: "backpacking", label: "Backpacking & Solo", icon: "hiking" },
 ];
 
 const BUDGETS = [
@@ -754,6 +791,8 @@ function Plan({ onBack, onGenerate, initError }) {
   const [ints, setInts] = useState(["food", "history"]);
   const [notes, setNotes] = useState("");
   const [err, setErr] = useState(initError || "");
+  const [showSug, setShowSug] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(""); // added for two-level autocomplete
 
   function go() {
     if (!dest.trim()) { setErr("Please enter a destination."); return; }
@@ -800,19 +839,79 @@ function Plan({ onBack, onGenerate, initError }) {
           </div>
         )}
 
-        {/* Destination */}
-        <section style={{ marginTop: 24 }}>
-          <h3 style={{ fontSize: "1.4rem", fontWeight: 800, padding: "0 16px 16px", color: "#0f172a" }}>Where to next?</h3>
-          <div style={{ padding: "0 16px", position: "relative" }}>
-            <div style={{ position: "absolute", left: 28, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-              <Icon name="location_on" sz={20} col={PRIMARY} />
+        {/* DESTINATION WITH COUNTRY → CITY AUTOCOMPLETE */}
+<section style={{ marginTop: 24 }}>
+  <h3 style={{ fontSize: "1.4rem", fontWeight: 800, padding: "0 16px 16px", color: "#0f172a" }}>
+    Where to next?
+  </h3>
+  <div style={{ padding: "0 16px", position: "relative" }}>
+    <div style={{ position: "absolute", left: 28, top: 26, pointerEvents: "none", zIndex: 2 }}>
+      <Icon name="location_on" sz={20} col={PRIMARY} />
+    </div>
+    <input
+      value={dest}
+      onChange={e => {
+        setDest(e.target.value);
+        setShowSug(true);
+        setSelectedCountry(""); // reset selected country when typing
+      }}
+      style={inp}
+      placeholder="Enter country or city"
+      onFocus={e => setShowSug(true)}
+      onBlur={e => setTimeout(() => setShowSug(false), 150)}
+      autoComplete="off"
+    />
+
+    {/* Suggestions dropdown */}
+    {showSug && (
+      <div style={{
+        position: "absolute", top: 56, left: 0, right: 0, zIndex: 100,
+        background: "#fff", borderRadius: 12, border: "1px solid #e2e8f0",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.12)", overflow: "hidden", maxHeight: 220, overflowY: "auto"
+      }}>
+        {/* If no country selected, show matching countries */}
+        {!selectedCountry && Object.keys(DESTINATIONS)
+          .filter(c => c.toLowerCase().includes(dest.toLowerCase()))
+          .slice(0, 8)
+          .map((c, i) => (
+            <div key={i}
+              onMouseDown={() => { setSelectedCountry(c); setDest(""); }}
+              style={{
+                padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
+                color: "#0f172a", borderBottom: i < 7 ? "1px solid #f1f5f9" : "none",
+                display: "flex", alignItems: "center", gap: 10,
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
+              onMouseLeave={e => e.currentTarget.style.background = "#fff"}
+            >
+              <Icon name="flag" sz={16} col={PRIMARY} />
+              {c}
             </div>
-            <input value={dest} onChange={e => setDest(e.target.value)} style={inp}
-              placeholder="Enter destination (e.g. Kyoto, Japan)"
-              onFocus={e => e.target.style.borderColor = PRIMARY}
-              onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
-          </div>
-        </section>
+        ))}
+
+        {/* If country selected, show its cities */}
+        {selectedCountry && DESTINATIONS[selectedCountry]
+          .filter(city => city.toLowerCase().includes(dest.toLowerCase()))
+          .slice(0, 10)
+          .map((city, i) => (
+            <div key={i}
+              onMouseDown={() => { setDest(`${city}, ${selectedCountry}`); setShowSug(false); setSelectedCountry(""); }}
+              style={{
+                padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
+                color: "#0f172a", borderBottom: i < DESTINATIONS[selectedCountry].length - 1 ? "1px solid #f1f5f9" : "none",
+                display: "flex", alignItems: "center", gap: 10,
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
+              onMouseLeave={e => e.currentTarget.style.background = "#fff"}
+            >
+              <Icon name="location_on" sz={16} col={PRIMARY} />
+              {city}
+            </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
         
 
         {/* Dates */}
