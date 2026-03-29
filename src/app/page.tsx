@@ -1406,7 +1406,7 @@ function Itinerary({ trip, onBack, onSave, onNavigate, alreadySaved }) {
 
 // ── ROOT ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const { trips, save, remove } = useTrips(); // keep this only once
+  const { trips, save, remove } = useTrips(); 
   const [screen, setScreen] = useState("welcome");
   const [trip, setTrip] = useState<any>(null);
   const [loadDest, setLoadDest] = useState("");
@@ -1490,7 +1490,9 @@ export default function App() {
         />
       )}
       {screen === "profile" && <Profile onNavigate={go} />}
-      <BottomNav active={screen} go={go} />
+      {["welcome", "mytrips", "saved", "profile"].includes(screen) && (
+        <BottomNav active={screen} go={go} />
+      )}
     </div>
   );
 }
