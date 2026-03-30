@@ -38,24 +38,50 @@ Constraints:
 - Return valid JSON ONLY.`;
 
 
-
-const DESTINATIONS = {
-  "Australia": ["Sydney", "Melbourne", "Brisbane", "Perth", "Cairns"],
-  "Philippines": ["Manila", "Cebu", "Davao", "Boracay", "Baguio"],
-  "China": ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Xiamen"],
-  "Hong Kong (China)": ["Hong Kong Island", "Kowloon", "New Territories"],
-  "Indonesia": ["Bali", "Jakarta", "Yogyakarta", "Bandung", "Lombok"],
-  "Japan": ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Sapporo"],
-  "Macau (China)": ["Macau Peninsula", "Taipa", "Cotai", "Coloane"],
-  "Malaysia": ["Kuala Lumpur", "Penang", "Langkawi", "Malacca", "Johor Bahru"],
-  "Singapore": ["Singapore City"],
-  "South Korea": ["Seoul", "Busan", "Incheon", "Jeju", "Daegu"],
-  "Taiwan": ["Taipei", "Kaohsiung", "Taichung", "Tainan", "Hualien"],
-  "Thailand": ["Bangkok", "Phuket", "Chiang Mai", "Krabi", "Pattaya"],
-  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
-  "Vietnam": ["Hanoi", "Ho Chi Minh City", "Da Nang", "Hue", "Nha Trang"],
-  "Brunei Darussalam": ["Bandar Seri Begawan"],
-  "Saudi Arabia": ["Riyadh", "Jeddah", "Mecca", "Medina"]
+const DESTINATIONS: Record<string, string[]> = {
+  "Australia":           ["Sydney", "Melbourne", "Brisbane", "Perth", "Cairns"],
+  "Philippines":         ["Manila", "Cebu", "Davao", "Boracay", "Baguio"],
+  "China":               ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Xiamen"],
+  "Hong Kong":           ["Hong Kong Island", "Kowloon", "New Territories"],
+  "Indonesia":           ["Bali", "Jakarta", "Yogyakarta", "Bandung", "Lombok"],
+  "Japan":               ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Sapporo"],
+  "Macau":               ["Macau Peninsula", "Taipa", "Cotai", "Coloane"],
+  "Malaysia":            ["Kuala Lumpur", "Penang", "Langkawi", "Malacca", "Johor Bahru"],
+  "Singapore":           ["Singapore City"],
+  "South Korea":         ["Seoul", "Busan", "Incheon", "Jeju", "Daegu"],
+  "Taiwan":              ["Taipei", "Kaohsiung", "Taichung", "Tainan", "Hualien"],
+  "Thailand":            ["Bangkok", "Phuket", "Chiang Mai", "Krabi", "Pattaya"],
+  "United Arab Emirates":["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
+  "Vietnam":             ["Hanoi", "Ho Chi Minh City", "Da Nang", "Hue", "Nha Trang"],
+  "Brunei":              ["Bandar Seri Begawan"],
+  "Saudi Arabia":        ["Riyadh", "Jeddah", "Mecca", "Medina"],
+  "India":               ["Mumbai", "Delhi", "Goa", "Jaipur", "Bangalore"],
+  "USA":                 ["New York", "Los Angeles", "San Francisco", "Miami", "Las Vegas"],
+  "UK":                  ["London", "Edinburgh", "Manchester", "Liverpool", "Bath"],
+  "France":              ["Paris", "Nice", "Lyon", "Marseille", "Bordeaux"],
+  "Italy":               ["Rome", "Florence", "Venice", "Milan", "Amalfi"],
+  "Spain":               ["Barcelona", "Madrid", "Seville", "Valencia", "Ibiza"],
+  "Greece":              ["Athens", "Santorini", "Mykonos", "Crete", "Rhodes"],
+  "Turkey":              ["Istanbul", "Cappadocia", "Antalya", "Bodrum", "Izmir"],
+  "Morocco":             ["Marrakech", "Casablanca", "Fez", "Tangier", "Chefchaouen"],
+  "Egypt":               ["Cairo", "Luxor", "Aswan", "Alexandria", "Sharm El Sheikh"],
+  "South Africa":        ["Cape Town", "Johannesburg", "Durban", "Kruger National Park"],
+  "Kenya":               ["Nairobi", "Mombasa", "Maasai Mara", "Amboseli"],
+  "Brazil":              ["São Paulo", "Rio de Janeiro", "Salvador", "Florianópolis"],
+  "Mexico":              ["Mexico City", "Cancún", "Tulum", "Oaxaca", "Guadalajara"],
+  "Argentina":           ["Buenos Aires", "Patagonia", "Mendoza", "Bariloche"],
+  "Germany":             ["Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"],
+  "Netherlands":         ["Amsterdam", "Rotterdam", "The Hague", "Utrecht"],
+  "Portugal":            ["Lisbon", "Porto", "Algarve", "Sintra", "Madeira"],
+  "Switzerland":         ["Zurich", "Geneva", "Bern", "Lucerne", "Interlaken"],
+  "Austria":             ["Vienna", "Salzburg", "Innsbruck", "Hallstatt"],
+  "Czech Republic":      ["Prague", "Brno", "Český Krumlov"],
+  "New Zealand":         ["Auckland", "Queenstown", "Wellington", "Christchurch"],
+  "Canada":              ["Toronto", "Vancouver", "Montreal", "Banff", "Quebec City"],
+  "Maldives":            ["Malé", "Baa Atoll", "Ari Atoll", "North Malé Atoll"],
+  "Iceland":             ["Reykjavik", "Akureyri", "Vik", "Golden Circle"],
+  "Norway":              ["Oslo", "Bergen", "Tromsø", "Lofoten Islands"],
+  "Sweden":              ["Stockholm", "Gothenburg", "Malmö", "Uppsala"],
 };
 
 const PRIMARY = "#2b9dee";
@@ -792,7 +818,8 @@ function Plan({ onBack, onGenerate, initError }) {
   const [notes, setNotes] = useState("");
   const [err, setErr] = useState(initError || "");
   const [showSug, setShowSug] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(""); // added for two-level autocomplete
+  const [showAllInts, setShowAllInts] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   function go() {
     if (!dest.trim()) { setErr("Please enter a destination."); return; }
@@ -839,77 +866,114 @@ function Plan({ onBack, onGenerate, initError }) {
           </div>
         )}
 
-        {/* DESTINATION WITH COUNTRY → CITY AUTOCOMPLETE */}
-<section style={{ marginTop: 24 }}>
-  <h3 style={{ fontSize: "1.4rem", fontWeight: 800, padding: "0 16px 16px", color: "#0f172a" }}>
-    Where to next?
-  </h3>
-  <div style={{ padding: "0 16px", position: "relative" }}>
-    <div style={{ position: "absolute", left: 28, top: 26, pointerEvents: "none", zIndex: 2 }}>
-      <Icon name="location_on" sz={20} col={PRIMARY} />
-    </div>
-    <input
-      value={dest}
-      onChange={e => {
-        setDest(e.target.value);
-        setShowSug(true);
-        setSelectedCountry(""); // reset selected country when typing
-      }}
-      style={inp}
-      placeholder="Enter country or city"
-      onFocus={e => setShowSug(true)}
-      onBlur={e => setTimeout(() => setShowSug(false), 150)}
-      autoComplete="off"
-    />
-
-    {/* Suggestions dropdown */}
-    {showSug && (
-      <div style={{
-        position: "absolute", top: 56, left: 0, right: 0, zIndex: 100,
-        background: "#fff", borderRadius: 12, border: "1px solid #e2e8f0",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.12)", overflow: "hidden", maxHeight: 220, overflowY: "auto"
-      }}>
-        {/* If no country selected, show matching countries */}
-        {!selectedCountry && Object.keys(DESTINATIONS)
-          .filter(c => c.toLowerCase().includes(dest.toLowerCase()))
-          .slice(0, 8)
-          .map((c, i) => (
-            <div key={i}
-              onMouseDown={() => { setSelectedCountry(c); setDest(""); }}
-              style={{
-                padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
-                color: "#0f172a", borderBottom: i < 7 ? "1px solid #f1f5f9" : "none",
-                display: "flex", alignItems: "center", gap: 10,
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
-              onMouseLeave={e => e.currentTarget.style.background = "#fff"}
-            >
-              <Icon name="flag" sz={16} col={PRIMARY} />
-              {c}
+{/* DESTINATION WITH COUNTRY → CITY AUTOCOMPLETE */}
+        <section style={{ marginTop: 24 }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 800, padding: "0 16px 16px", color: "#0f172a" }}>
+            Where to next?
+          </h3>
+          <div style={{ padding: "0 16px", position: "relative" }}>
+            <div style={{ position: "absolute", left: 28, top: 26, pointerEvents: "none", zIndex: 2 }}>
+              <Icon name="location_on" sz={20} col={PRIMARY} />
             </div>
-        ))}
+            <input
+  value={dest}
+  onChange={e => { 
+    setDest(e.target.value); 
+    setShowSug(true); 
+    setSelectedCountry(null); 
+  }}
+  style={inp}
+  placeholder="Search country or city…"
+  onFocus={e => { 
+    e.target.style.borderColor = PRIMARY; 
+    setShowSug(true); 
+  }}
+  onBlur={e => { 
+    e.target.style.borderColor = "#e2e8f0"; 
+    setTimeout(() => setShowSug(false), 150); 
+  }}
+  autoComplete="off"
+/>
 
-        {/* If country selected, show its cities */}
-        {selectedCountry && DESTINATIONS[selectedCountry]
-          .filter(city => city.toLowerCase().includes(dest.toLowerCase()))
-          .slice(0, 10)
-          .map((city, i) => (
-            <div key={i}
-              onMouseDown={() => { setDest(`${city}, ${selectedCountry}`); setShowSug(false); setSelectedCountry(""); }}
-              style={{
-                padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
-                color: "#0f172a", borderBottom: i < DESTINATIONS[selectedCountry].length - 1 ? "1px solid #f1f5f9" : "none",
-                display: "flex", alignItems: "center", gap: 10,
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
-              onMouseLeave={e => e.currentTarget.style.background = "#fff"}
-            >
-              <Icon name="location_on" sz={16} col={PRIMARY} />
-              {city}
-            </div>
-        ))}
-      </div>
-    )}
+            {/* DROPDOWN — Country list or City list */}
+            {showSug && (
+              <div style={{
+                position: "absolute", top: 56, left: 0, right: 0, zIndex: 100,
+                background: "#fff", borderRadius: 12, border: "1px solid #e2e8f0",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.12)", overflow: "hidden",
+                maxHeight: 260, overflowY: "auto"
+              }}>
+                {/* If a country is selected — show its cities */}
+                {selectedCountry ? (
+                  <>
+                    <div
+                      onMouseDown={() => { setSelectedCountry(null); setDest(""); setShowSug(true);}}
+                      style={{ padding: "10px 16px", fontSize: ".8rem", fontWeight: 700,
+                        color: PRIMARY, cursor: "pointer", borderBottom: "1px solid #f1f5f9",
+                        display: "flex", alignItems: "center", gap: 6 }}>
+                      <Icon name="arrow_back" sz={14} col={PRIMARY} />
+                      Back to countries
+                    </div>
+                    <div style={{ padding: "6px 16px 4px", fontSize: ".72rem", fontWeight: 700,
+                      color: "#94a3b8", letterSpacing: ".07em", textTransform: "uppercase" }}>
+                      Cities in {selectedCountry}
+                    </div>
+                    {(DESTINATIONS[selectedCountry] || []).map((city, i) => {
+                      const cities = DESTINATIONS[selectedCountry] || [];
+                      return (
+                        <div key={i}
+                          onMouseDown={() => {
+                            setDest(`${city}, ${selectedCountry}`);
+                            setShowSug(false);
+                            setSelectedCountry(null);
+                          }}
+                          style={{ padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
+                            color: "#0f172a",
+                            borderBottom: i < cities.length - 1 ? "1px solid #f1f5f9" : "none",
+                            display: "flex", alignItems: "center", gap: 10 }}
+                          onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
+                          onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                          <Icon name="location_on" sz={16} col={PRIMARY} />
+                          {city}
+                        </div>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <>
+                    {/* Show filtered countries or all countries */}
+                    <div style={{ padding: "6px 16px 4px", fontSize: ".72rem", fontWeight: 700,
+                      color: "#94a3b8", letterSpacing: ".07em", textTransform: "uppercase" }}>
+                      {dest.trim() === "" ? "Select a country" : "Matching countries"}
+                    </div>
+                    {Object.keys(DESTINATIONS)
+                      .filter(country =>
+                        dest.trim() === "" ||
+                        country.toLowerCase().includes(dest.toLowerCase())
+                      )
+                      .map((country, i, arr) => (
+                        <div key={i}
+                          onMouseDown={() => {
+                            setSelectedCountry(country);
+                            setDest("");
+                          }}
+                          style={{ padding: "12px 16px", fontSize: ".9rem", cursor: "pointer",
+                            color: "#0f172a",
+                            borderBottom: i < arr.length - 1 ? "1px solid #f1f5f9" : "none",
+                            display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                          onMouseEnter={e => e.currentTarget.style.background = `${PRIMARY}08`}
+                          onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <Icon name="public" sz={16} col="#94a3b8" />
+                            {country}
+                          </div>
+                          <Icon name="chevron_right" sz={16} col="#94a3b8" />
+                        </div>
+                      ))}
+                  </>
+                )}
+              </div>
+            )}
   </div>
 </section>
         
@@ -973,21 +1037,22 @@ function Plan({ onBack, onGenerate, initError }) {
           </div>
         </section>
 
-        {/* Interests */}
+        {/* INTERESTS */}
         <section style={{ marginTop: 28 }}>
           <div style={{ padding: "0 16px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0f172a" }}>What are your interests?</h3>
-            <span style={{ fontSize: ".7rem", fontWeight: 700, color: "#94a3b8",
+            <span style={{ fontSize: ".7rem", fontWeight: 700, color: PRIMARY,
               letterSpacing: ".07em", textTransform: "uppercase", cursor: "pointer" }}
-              onClick={() => setInts(ints.length === INTERESTS.length ? [] : INTERESTS.map(i => i.id))}>
-              Select all
+              onClick={() => setShowAllInts(p => !p)}>
+              {showAllInts ? "See Less ▲" : "See All ▼"}
             </span>
           </div>
           <div style={{ padding: "0 16px", display: "flex", flexWrap: "wrap", gap: 10 }}>
-            {INTERESTS.map(i => {
+            {(showAllInts ? INTERESTS : INTERESTS.slice(0, 8)).map(i => {
               const on = ints.includes(i.id);
               return (
-                <button key={i.id} onClick={() => setInts(p => p.includes(i.id) ? p.filter(x => x !== i.id) : [...p, i.id])}
+                <button key={i.id}
+                  onClick={() => setInts(p => p.includes(i.id) ? p.filter(x => x !== i.id) : [...p, i.id])}
                   style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 16px",
                     borderRadius: 999, fontSize: ".88rem", fontWeight: 600, cursor: "pointer", transition: "all .15s",
                     border: `1px solid ${on ? PRIMARY : "#e2e8f0"}`,
@@ -998,6 +1063,13 @@ function Plan({ onBack, onGenerate, initError }) {
               );
             })}
           </div>
+          {!showAllInts && (
+            <div style={{ padding: "10px 16px 0" }}>
+              <span style={{ fontSize: ".78rem", color: "#94a3b8" }}>
+                +{INTERESTS.length - 8} more interests available
+              </span>
+            </div>
+          )}
         </section>
 
         {/* Notes */}
